@@ -1,1 +1,4 @@
 __pycache__
+Logging_File.txt
+db.sqlite3
+*.swp
