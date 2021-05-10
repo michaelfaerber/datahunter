@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container" id="container_queries_file">
+    {% for line in result %}
+        {{ line }}<br><br>
+    {% endfor %}    
+</div>
+{% endblock %}

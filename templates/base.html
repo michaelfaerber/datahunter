@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/stylebase.css' %}">
+    <title>DatasetSearchEngine</title>
+    {% block nav%}
+        <div class="topnav" id="myTopnav">
+            <a href="home">Dataset-Search-Engine</a>
+            <div class="topnav-right" id="rightnav">
+                <a href="about">About</a>
+            </div>
+        </div>
+    {% endblock %}
+</head>
+<body bgcolor="ivory">
+    {% block content %}
+    
+    {% endblock %}
+</body>
+<footer>
+    <p style="text-align: center; color:rgb(140, 140, 145); font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size:small">
+        Dataset-Search-Engine<br>
+        Michael Färber, David Lamprecht, Ann-Kathrin Leisinger
+    </p>
+</footer>
+</html>

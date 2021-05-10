@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'styles/stylehome.css' %}?20200830">
+<div class="container" id="hcontainer">
+    <div id="hdes">
+        <div id="hdes1">
+            <b>About</b>
+        </div>
+        <div id="hdes2">
+            <p><b>This search engine enables users to search for suitable datasets given a research problem description (e.g., consisting of keywords or a paper's abstract).
+            </b></p>
+            <p>At the moment the search engine is not able to make predictions for all problem descriptions. Possible requests can be found <a href="possible_queries">here</a>.
+       </div>
+        <div id="hdes3">
+            <form id="aboutb" method="GET"></form>
+            <button type="submit" form="aboutb" formaction="about" style="border:2px solid rgb(50, 50, 60); background-color:ivory; color:rgb(50, 50, 60); width: 140px; height:40px"><b>Learn more</b></button>
+        </div>
+    </div>
+    <div id="hmain">
+        <form id="queryform">
+            <label for="querytext">Please enter your query:</label><br>
+            <textarea name="querytext" rows="12" cols="125"></textarea><br>
+        </form>
+    </div>
+    <div id="hsub">
+        <button class="mybutton1" type="submit" form="queryform" formaction="recommendation"><b>Submit</b></button>
+        <button class="mybutton1" type="reset" form="queryform"><b>Reset</b></button>
+    </div>
+</div>
+{% endblock %}

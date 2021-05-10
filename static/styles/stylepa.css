@@ -1,0 +1,11 @@
+/*Style for privacy.html and about.html */
+
+hr{
+    width: 30%;
+    border: 1px solid rgb(140, 140, 145);
+    margin-top: -15px;
+    margin-bottom: 70px;
+}
+h1{
+    text-align: center;
+}
