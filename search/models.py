@@ -7,6 +7,11 @@ from django.contrib import admin
 class Link(models.Model):
     url = models.URLField(default="", null=True)
 
+class Paper(models.Model):
+    paperid = models.URLField(default="", null=True)
+    url = models.URLField(default="", null=True)
+    title = models.URLField(default="", null=True)
+
 class Dataset(models.Model):
     """Specifies the attributes of a Dataset object."""
     title = models.CharField(max_length=500, default="", null=True)
@@ -32,4 +37,5 @@ class Dataset(models.Model):
     language = models.CharField(max_length=50, default="", null=True)
     contact = models.CharField(max_length=500, default="", null=True)
     ranking_score = models.DecimalField(decimal_places=5, max_digits=10, default=1, null=True)
-    referenced_papers = models.CharField(max_length=10000000, default="", null=True)
+    referenced_papers = models.ManyToManyField(Paper, default="")
+    referenced_papers_string = models.CharField(max_length=10000000, default="", null=True)

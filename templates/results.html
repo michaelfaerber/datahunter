@@ -1,104 +1,122 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load searchextras %}
+
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{% static 'styles/styleresults.css' %}?20200821">
-<div class="container" id="rcontainer">
+<link rel="stylesheet" type="text/css" href="{% static 'styles/styleresults.css' %}">
+<div class="container">
     {% if recommendation_empty %}
         <h2>We are sorry, but we did not find any datasets that match your problem description.<h2>
     {% else %}
-        <div id="rlist">
+        <div>
             <h1>Recommended Datasets</h1>
-            <hr></hr>
             {% for dataset in dataset_page_object %}
-                {% for link in dataset.link.all %}
-                    <h3><a href="{{ link.url }}">{{ dataset.title }}</a><br><br></h3>
-                {% endfor %}
-                {{ dataset.description}}<br><br>
-                <table style="font-size:90%; border:2px solid rgb(140, 140, 145)">
-                    {% if dataset.topic != None and dataset.topic != "" %}
-                        <tr>
-                            <td>Topic, keywords:</td>
-                            <td>{{ dataset.topic }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.identifier != None and dataset.identifier != "" %}
-                        <tr>
-                            <td>Identifier (doi):</td>
-                            <td>{{ dataset.identifier }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.creator != None and dataset.creator != "" %}
-                        <tr>
-                            <td>Creator/Author:</td>
-                            <td>{{ dataset.creator }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.publisher != None and dataset.publisher != "" %}
-                        <tr>
-                            <td>Publisher:</td>
-                            <td>{{ dataset.publisher }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.access_right != None and dataset.access_right != "" %}
-                        <tr>
-                            <td>Access rights:</td>
-                            <td>{{ dataset.access_right }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.size != None and dataset.size != "" %}
-                        <tr>
-                            <td>Size in kilobyte:</td>
-                            <td>{{ dataset.size }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.data_format != None and dataset.data_format != "" %}
-                        <tr>
-                            <td>Format of dataset:</td>
-                            <td>{{ dataset.data_format }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.source != None and dataset.source != "" %}
-                        <tr>
-                            <td>Source:</td>
-                            <td>{{ dataset.source }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.issued_date != None and dataset.issued_date != "" %}
-                        <tr>
-                            <td>Date of issue:</td>
-                            <td>{{ dataset.issued_date }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.modified_date != None and dataset.modified_date != "" %}
-                        <tr>
-                            <td>Date of last modification:</td>
-                            <td>{{ dataset.modified_date }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.language != None and dataset.language != "" %}
-                        <tr>
-                            <td>Language:</td>
-                            <td>{{ dataset.language }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.contact != None and dataset.contact != "" %}
-                        <tr>
-                            <td>Contact:</td>
-                            <td>{{ dataset.contact }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if dataset.referenced_papers != None and dataset.referenced_papers != "" %}
-                        <tr>
-                            <td>Papers that reference this dataset:</td>
-                            <td>
-                                {{ dataset.referenced_papers |truncatewords:50 }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                </table>
-                <br>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>{{ dataset.title }}</h3>
+                        {{ dataset.description}}
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            {% if dataset.topic != None and dataset.topic != "" %}
+                                <tr style>
+                                    <td>Topic, keywords:</td>
+                                    <td>{{ dataset.topic }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.identifier != None and dataset.identifier != "" %}
+                                <tr>
+                                    <td>Identifier (doi):</td>
+                                    <td>{{ dataset.identifier }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.creator != None and dataset.creator != "" %}
+                                <tr>
+                                    <td>Creator/Author:</td>
+                                    <td>{{ dataset.creator }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.publisher != None and dataset.publisher != "" %}
+                                <tr>
+                                    <td>Publisher:</td>
+                                    <td>{{ dataset.publisher }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.access_right != None and dataset.access_right != "" %}
+                                <tr>
+                                    <td>Access rights:</td>
+                                    <td>{{ dataset.access_right }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.size != None and dataset.size != "" %}
+                                <tr>
+                                    <td>Size in kilobyte:</td>
+                                    <td>{{ dataset.size }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.data_format != None and dataset.data_format != "" %}
+                                <tr>
+                                    <td>Format of dataset:</td>
+                                    <td>{{ dataset.data_format }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.source != None and dataset.source != "" %}
+                                <tr>
+                                    <td>Source:</td>
+                                    <td>{{ dataset.source }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.issued_date != None and dataset.issued_date != "" %}
+                                <tr>
+                                    <td>Date of issue:</td>
+                                    <td>{{ dataset.issued_date }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.modified_date != None and dataset.modified_date != "" %}
+                                <tr>
+                                    <td>Date of last modification:</td>
+                                    <td>{{ dataset.modified_date }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.language != None and dataset.language != "" %}
+                                <tr>
+                                    <td>Language:</td>
+                                    <td>{{ dataset.language }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.contact != None and dataset.contact != "" %}
+                                <tr>
+                                    <td>Contact:</td>
+                                    <td>{{ dataset.contact }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if dataset.referenced_papers != None %}
+                                <tr>
+                                    <td>Papers that reference this dataset:</td>
+                                    <td>
+                                        <ul>
+                                            {% for paper in dataset.referenced_papers.all %}
+                                                {% if paper.title != None and paper.title != "" %}
+                                                    <li>{{ paper.title }} (<a href="{{ paper.url }}">{{ paper.paperid }}</a>)</li>
+                                                {% else %}
+                                                    <li><a href="{{ paper.url }}">{{ paper.paperid }}</a> (no title)</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </table>
+
+                    {% for link in dataset.link.all %}
+                        <a href="{{ link.url }}" class="btn btn-dark">Go to dataset</a>
+                    {% endfor %}
+
+                    </div>
+                </div>
             {% endfor %}
+
             <div class="pagination">
                 <span class="step-links">
                     {% if dataset_page_object.has_previous %}
@@ -114,19 +132,6 @@
                     {% endif %}
                 </span>
             </div>
-        </div>
-        <div id="rquery">
-            <h2>Your Query</h2>
-            <hr></hr>
-            <img src="data:image/png;base64,{{ figure }}" alt="" height="350" width="350">
-            <br><br>
-            <h2>Filter Options</h2>
-            <hr></hr>
-            <form method="get">
-                {{ filtered_datasets.form.as_p }}
-                <button class="mybutton1" type="submit">Filter your query</button>
-            </form>
-            <br><br>
         </div>
     {% endif %}
 </div>

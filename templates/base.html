@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <title>DatasetSearchEngine</title>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -28,14 +30,17 @@
             </div>
         </div>
     </nav>
-    {% block content %}
-    
-    {% endblock %}
+    <div class="container" style="max-width: 900px; margin-top: 50px; margin-bottom: 50px">
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
+
 <footer>
     <p style="text-align: center; color:rgb(140, 140, 145); font-size:small">
         Dataset-Search-Engine<br>
         Michael Färber, David Lamprecht, Ann-Kathrin Leisinger
     </p>
 </footer>
+
 </html>

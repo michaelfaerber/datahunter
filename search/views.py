@@ -21,7 +21,7 @@ from nltk.stem import PorterStemmer
 import matplotlib
 matplotlib.use('Agg')
 from .filters import DatasetFilter
-from .models import Dataset, Link
+from .models import Dataset, Link, Paper
 
 
 def preprocess(input_string):
@@ -153,7 +153,7 @@ def dataset_prediction(query):
         ranking_array = bm25_ranking(query, selected_datasets)
     except:
         ranking_array = []
-    print("Prediction&Ranking finished")
+    print("Prediction and ranking finished")
     return prediction_indices, ranking_array
 
 def recommendation(request):
@@ -274,20 +274,35 @@ def recommendation(request):
         else:
             dataset_ranking_score = None
         dataset_referenced_papers_list = str(references_frame['isReferencedBy'][index]).split(",")
-        dataset_referenced_papers = ""
+        dataset_referenced_papers = []
+        dataset_referenced_papers_string = ""
+
+        papers_max = 5
+        papers_count = 0
         for paper in dataset_referenced_papers_list:
+            if papers_count >= papers_max:
+                break
+            papers_count += 1
+            referenced_paper = {}
+            referenced_paper["url"] = paper
             paperid = str(paper).replace("http://ma-graph.org/entity/", "").strip()
             text = str(paperid)
+            referenced_paper["id"] = text
             try:
                 title = titles.get(int(paperid))
                 text = text + " (" + str(title) + ")"
+                if title is not None and title != "":
+                    referenced_paper["title"] = title
             except:
                 pass
             text = text.replace("(None)", "")
             if paper == dataset_referenced_papers_list[0]:
-                dataset_referenced_papers = dataset_referenced_papers + " " + text
+                dataset_referenced_papers_string = dataset_referenced_papers_string + " " + text
             else:
-                dataset_referenced_papers = dataset_referenced_papers + ", " + text
+                dataset_referenced_papers_string = dataset_referenced_papers_string + ", " + text
+
+            dataset_referenced_papers.append(referenced_paper)
+
         dataset = Dataset.objects.create(title=dataset_title, description=dataset_description,
                                          topic=dataset_topic,
                                          identifier=dataset_identifier,
@@ -299,21 +314,36 @@ def recommendation(request):
                                          modified_date=dataset_modified_date,
                                          language=dataset_language, contact=dataset_contact,
                                          ranking_score=dataset_ranking_score,
-                                         referenced_papers=dataset_referenced_papers)
+                                         referenced_papers_string=dataset_referenced_papers_string)
         dataset.save()
+
+        # URLs
         if len(dataset_url_list) > 1:
             dataset_url_list = [dataset_url_list[0]]
         for url in dataset_url_list:
             link = Link.objects.create(url=url)
             link.save()
             dataset.link.add(link)
+
+        # Papers
+        for paper in dataset_referenced_papers:
+            if "title" in paper:
+                paper = Paper.objects.create(url=paper["url"], paperid=paper["id"], title=paper["title"])
+            else:
+                paper = Paper.objects.create(url=paper["url"], paperid=paper["id"])
+            paper.save()
+            dataset.referenced_papers.add(paper)
+
+
+
     col = []
     for dataset in Dataset.objects.all():
         title_description_tuple = (dataset.title, dataset.description)
         col.append(title_description_tuple)
     if len(col) > 0:
-        figure_uri = graphic(col, query_text)
-        context['figure'] = figure_uri
+        # Took quite long, disabled
+        #figure_uri = graphic(col, query_text)
+        #context['figure'] = figure_uri
         context['recommendation_empty'] = False
     else:
         context['figure'] = ""
