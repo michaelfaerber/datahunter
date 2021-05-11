@@ -1,28 +1,39 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'styles/stylebase.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/stylehome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap.min.css' %}">
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <title>DatasetSearchEngine</title>
-    {% block nav%}
-        <div class="topnav" id="myTopnav">
-            <a href="home">Dataset-Search-Engine</a>
-            <div class="topnav-right" id="rightnav">
-                <a href="about">About</a>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="home">Dataset-Search-Engine</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="home">Home</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item"><a class="nav-link" href="about">About</a></li>
+                </ul>
             </div>
         </div>
-    {% endblock %}
-</head>
-<body bgcolor="ivory">
+    </nav>
     {% block content %}
     
     {% endblock %}
 </body>
 <footer>
-    <p style="text-align: center; color:rgb(140, 140, 145); font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size:small">
+    <p style="text-align: center; color:rgb(140, 140, 145); font-size:small">
         Dataset-Search-Engine<br>
         Michael Färber, David Lamprecht, Ann-Kathrin Leisinger
     </p>
