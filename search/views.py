@@ -1,18 +1,16 @@
 """The views module connects the GUI with functionality."""
 
-import urllib
-import base64
 import datetime
 import string
 import pickle
+import re
+import fasttext
 from io import BytesIO
 import pandas as pd
 import numpy as np
-import seaborn as sns
 from matplotlib import pyplot
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
 from rank_bm25 import BM25Plus
 from nltk.tokenize import word_tokenize
@@ -54,10 +52,8 @@ def tfidf(document_collection):
     output: list of tfidfs scores for documents tf_document_collection
     """
     transformer = TfidfTransformer()
-    loaded_vec = TfidfVectorizer(decode_error="replace", min_df=1,
-                                 vocabulary=pickle.load(open(
-                                     "/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Quellcode/searchengine/search/tfidf_vocabulary.pkl",
-                                     "rb")))
+    vocab = pickle.load(open("/vol3/ann-kathrin/tfidf_vocab.pkl", "rb"))
+    loaded_vec = TfidfVectorizer(decode_error="replace", min_df=1, vocabulary=vocab)
     tf_document_collection = transformer.fit_transform(loaded_vec.fit_transform(
         np.array(document_collection)))
     return tf_document_collection
@@ -66,9 +62,9 @@ def home(request):
     """Method that opens or redirects to home.html."""
     return render(request, 'home.html')
 
-def about(request):
-    """Method that redirects to about.html."""
-    return render(request, 'about.html')
+def no_link(request):
+    """Method that redirects to no_link.html."""
+    return render(request, 'no_link.html')
 
 def possible_queries(request):
     f = open('/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/Abstracts/Samples_Queries_Abstracts.txt', 'r')
@@ -91,27 +87,13 @@ def sorting_datestrings(datelist):
     day = int(day_hour[0])
     return year, month, day
 
-def bm25_ranking(query, selected_datasets):
+def remove_html(text):
     """
-    Computes BM25 scores of a given query in relation to all selected datasets, saves the scores
-    with the corresponding dataset in a list and sorts the list by degreasing BM25 score.
-    input: query and list of selected_datasets(index+description),
-    output: sorted list of datasets+their BM25 score in relation to the query
+    This method removes html tags from a text to clean it up
     """
-    preprocessed_datasets = []
-    for dataset in selected_datasets:
-        preprocessed_datasets.append(preprocess(dataset[1]))
-    tokenized_corpus = [doc.split(" ") for doc in preprocessed_datasets]
-    bm25_modell = BM25Plus(tokenized_corpus)
-    query = preprocess(query)
-    tokenized_query = query.split(" ")
-    scores = bm25_modell.get_scores(tokenized_query)
-    scoring_list = []
-    for i in range(len(selected_datasets)):
-        dataset_score_triple = (selected_datasets[i][0], selected_datasets[i][1], scores[i])
-        scoring_list.append(dataset_score_triple)
-    array = sorted(scoring_list, key=lambda l: l[2], reverse=True)
-    return array
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', text)
+    return cleantext
 
 def dataset_prediction(query):
     """
@@ -121,39 +103,54 @@ def dataset_prediction(query):
     input: query
     output: indices of predicted datasets, array with ranking scores for datasets
     """
-    preprocessed_query = tfidf([preprocess(query)])
-    model = pickle.load(open(
-        '/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/trained_models/svm_tfidf_abstracts.sav',
-        'rb'))
-    label_encoder = pickle.load(open(
-        '/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/trained_models/label_multibinarizer_svm_tfidf_abstracts.sav',
-        'rb'))
-    prediction = model.predict(preprocessed_query)
-    prediction_transformed = label_encoder.inverse_transform(prediction)
-    prediction_clean = str(prediction_transformed).replace("[", "").replace("]", "")
-    prediction_clean = prediction_clean.replace("(", "").replace(")", "").replace("'", "")
-    prediction_clean = prediction_clean.replace(" '", "").replace("' ", "").strip()
+    ### For tfidf model
+    #preprocessed_query = tfidf([preprocess(query)])
+    #model = pickle.load(open(
+    #    '/vol3/ann-kathrin/svm_tfidf.sav',
+    #    'rb'))
+    #label_encoder = pickle.load(open(
+    #    '/vol3/ann-kathrin/label_encoder_tfidf.sav',
+    #    'rb'))
+    ###
+    preprocessed_query = preprocess(query)
+    model = fasttext.load_model('/vol3/ann-kathrin/model_fasttext_classification_rawtext.bin')
+    prediction = model.predict(preprocessed_query, k=5)
+    prediction_clean = str(prediction[0]).replace("__label__", "").replace("(", "").replace(")", "").replace("'", "")
+    ### For tfidf model
+    #class_indices = [i for i, x in enumerate(prediction[0]) if x == 1]
+    #prediction_transformed = label_encoder.inverse_transform(prediction)
+    #prediction_clean = str(prediction_transformed).replace("[", "").replace("]", "")
+    #prediction_clean = prediction_clean.replace("(", "").replace(")", "").replace("'", "")
+    #prediction_clean = prediction_clean.replace(" '", "").replace("' ", "").strip()
+    ###
     prediction_list = prediction_clean.split(",")
     dataset_file = pd.read_csv(
-        "/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/DSKG_v2.csv")
-    with open("Logging_File.txt", "a+") as file:
+        "/vol3/ann-kathrin/DSKG_FINAL_TABELLENFORM.csv")
+    with open("Logging_File.txt", "a") as file:
         file.write("{}\t{}\n".format(query, prediction_list))
         file.flush()
     prediction_indices = []
     selected_datasets = []
     for predicted_dataset in prediction_list:
         if predicted_dataset is not '' and predicted_dataset is not None:
-            dataset_in = str(predicted_dataset).replace("'", "").replace(" '", "").replace("' ", "").strip()
-            index = dataset_file[dataset_file['dataset'] == dataset_in].index.values
+            index = dataset_file[dataset_file['dataset'] == str(predicted_dataset).strip()].index.values
             for i in index:
                 prediction_indices.append(int(i))
                 index_description_tuple = (int(i), str(dataset_file['description'][int(i)]))
                 selected_datasets.append(index_description_tuple)
-    try:
-        ranking_array = bm25_ranking(query, selected_datasets)
-    except:
-        ranking_array = []
-    print("Prediction and ranking finished")
+    ### For tfidf model
+    #confidence_scores = model.decision_function(preprocessed_query)
+    #scoring_list = []
+    #for i in range(len(selected_datasets)):
+    #    dataset_score_triple = (selected_datasets[i][0], selected_datasets[i][1], abs(confidence_scores[0][int(class_indices[i])]))
+    #    scoring_list.append(dataset_score_triple)
+    #print(str(prediction[1]).replace("[", "").replace("]", "").split(" "))
+    ###
+    scoring_list = []
+    for i in range(len(selected_datasets)):
+         dataset_score_triple = (selected_datasets[i][0], selected_datasets[i][1], prediction[1][i])
+         scoring_list.append(dataset_score_triple)
+    ranking_array = sorted(scoring_list, key=lambda l: l[2], reverse=False)
     return prediction_indices, ranking_array
 
 def recommendation(request):
@@ -164,10 +161,10 @@ def recommendation(request):
     query_text = request.GET.get('querytext', "")
     indices, ranking_array = dataset_prediction(query_text)
     dataframe = pd.read_csv(
-        "/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/DSKG_v2.csv")
+        "/vol3/ann-kathrin/DSKG_FINAL_TABELLENFORM.csv")
     references_frame = pd.read_csv(
-        "/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/DSKG_MAG_v2.csv")
-    with open("/vol3/ann-kathrin//4643Ann-Kathrin_Leisinger/Daten/PaperTitles.txt", 'r') as titles_frame:
+        "/vol3/ann-kathrin/DSKG_MAKG.csv")
+    with open("/vol3/ann-kathrin/4643Ann-Kathrin_Leisinger/Daten/PaperTitles.txt", 'r') as titles_frame:
         titles = {int(line.split("\t")[0]): line.split("\t")[1] for line in titles_frame}
     for index in indices:
         if not pd.isnull(dataframe['title'][index]):
@@ -175,20 +172,29 @@ def recommendation(request):
         else:
             dataset_title = ""
         if not pd.isnull(dataframe['description'][index]):
-            dataset_description = dataframe['description'][index].strip()
+            dataset_description = remove_html(dataframe['description'][index].strip())
         else:
             dataset_description = ""
         dataset_topic = ""
         if not pd.isnull(dataframe['keyword'][index]):
             keyword = str(dataframe['keyword'][index]).strip()
             keyword = keyword.translate(str.maketrans("", "", string.digits))
-            keyword = keyword.translate(str.maketrans("", "", string.punctuation))
+            #keyword = keyword.translate(str.maketrans("", "", string.punctuation))
             dataset_topic = dataset_topic + keyword
         if not pd.isnull(dataframe['alternative'][index]):
             alternative = str(dataframe['alternative'][index]).strip()
             alternative = alternative.translate(str.maketrans("", "", string.digits))
-            alternative = alternative.translate(str.maketrans("", "", string.punctuation))
+            #alternative = alternative.translate(str.maketrans("", "", string.punctuation))
+            if dataset_topic != "":
+                dataset_topic = dataset_topic + ", "
             dataset_topic = dataset_topic + alternative
+        if not pd.isnull(dataframe['theme'][index]):
+            theme = str(dataframe['theme'][index]).strip()
+            theme = theme.translate(str.maketrans("", "", string.digits))
+            #theme = theme.translate(str.maketrans("", "", string.punctuation))
+            if dataset_topic != "":
+                dataset_topic = dataset_topic + ", "
+            dataset_topic = dataset_topic + theme
         dataset_url_list = []
         if not pd.isnull(dataframe['landingPage'][index]):
             landingPage = str(dataframe['landingPage'][index]).split(",")
@@ -200,6 +206,7 @@ def recommendation(request):
             for url in accessURL:
                 if url not in dataset_url_list:
                     dataset_url_list.append(url)
+        print(dataset_url_list)
         if not pd.isnull(dataframe['identifier'][index]):
             dataset_identifier = dataframe['identifier'][index]
         else:
@@ -263,10 +270,6 @@ def recommendation(request):
             dataset_language = dataframe['language'][index]
         else:
             dataset_language = None
-        if not pd.isnull(dataframe['contactPointEmail'][index]):
-            dataset_contact = dataframe['contactPointEmail'][index]+" ("+ dataframe['contactPointName'][index]+")"
-        else:
-            dataset_contact = ""
         ranking_array_object = [x for x in ranking_array if x[0] == index]
         ranking_array_index = ranking_array.index(ranking_array_object[0])
         if not ranking_array_index is None:
@@ -312,7 +315,7 @@ def recommendation(request):
                                          size=dataset_size, data_format=dataset_data_format,
                                          source=dataset_source, issued_date=dataset_issued_date,
                                          modified_date=dataset_modified_date,
-                                         language=dataset_language, contact=dataset_contact,
+                                         language=dataset_language,
                                          ranking_score=dataset_ranking_score,
                                          referenced_papers_string=dataset_referenced_papers_string)
         dataset.save()
@@ -336,17 +339,14 @@ def recommendation(request):
 
 
 
+
     col = []
     for dataset in Dataset.objects.all():
         title_description_tuple = (dataset.title, dataset.description)
         col.append(title_description_tuple)
     if len(col) > 0:
-        # Took quite long, disabled
-        #figure_uri = graphic(col, query_text)
-        #context['figure'] = figure_uri
         context['recommendation_empty'] = False
     else:
-        context['figure'] = ""
         context['recommendation_empty'] = True
     filtered_datasets = DatasetFilter(request.GET,
                                       queryset=Dataset.objects.all().order_by('ranking_score'))
@@ -356,33 +356,3 @@ def recommendation(request):
     dataset_page_object = paginated_filtered_datasets.get_page(page_number)
     context['dataset_page_object'] = dataset_page_object
     return render(request, 'results.html', context=context)
-
-def graphic(dataset_list, query_text):
-    """
-    Displays embeddings of datasets' descriptions and query."""
-    data_list = []
-    for i in range(0, len(dataset_list)):
-        prep = preprocess(dataset_list[i][1])
-        tup = (dataset_list[i][0], prep)
-        data_list.append(tup)
-    query = preprocess(query_text)
-    query_tuple = ("Query", query)
-    data_list.append(query_tuple)
-    col = [x[1] for x in data_list]
-    embeddings = tfidf(col)
-    tsne = TSNE()
-    data = tsne.fit_transform(embeddings)
-    fig, axis = pyplot.subplots()
-    sns.scatterplot(x=[x[0] for x in data], y=[x[1] for x in data], ax=axis)
-    for i in range(len(data_list)-1):
-        axis.annotate(data_list[i][0], (data[i][0], data[i][1]))
-    pyplot.scatter(x=data[-1][0], y=data[-1][1], color='r')
-    axis.annotate(data_list[-1][0], (data[-1][0], data[-1][1]), color='r')
-    axis.set_title("tfidf representations reduced by T-SNE")
-    fig = pyplot.gcf()
-    buf = BytesIO()
-    fig.savefig(buf, format='png')
-    buf.seek(0)
-    encoded_string = base64.b64encode(buf.read())
-    uri = urllib.parse.quote(encoded_string)
-    return uri

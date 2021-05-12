@@ -9,7 +9,7 @@ from .models import Dataset
 
 class DatasetFilter(dfi.FilterSet):
     """Defines filter for list of Dataset objects."""
-    topic = dfi.CharFilter(lookup_expr='icontains', label="Topic/Keyword")
+    topic = dfi.CharFilter(lookup_expr='icontains', label="Topic/Keyword:")
     creator = dfi.CharFilter(lookup_expr='icontains', label="Creator/Author:")
     publisher = dfi.CharFilter(lookup_expr='icontains', label="Publisher:")
     ACCESS_RIGHT_CHOICES = (('Closed', 'Closed'), ('Open', 'Open'), ('', 'Any'))
@@ -21,11 +21,11 @@ class DatasetFilter(dfi.FilterSet):
                            ('xls', 'xlsx/xls'), ('', 'Any'))
     data_format = dfi.MultipleChoiceFilter(choices=DATA_FORMAT_CHOICES,
                                            widget=forms.CheckboxSelectMultiple,
-                                           lookup_expr='icontains')
+                                           lookup_expr='icontains', label='Data Format:')
     SOURCE_CHOICES = (('OpenAire', 'OpenAire'), ('Wikidata.DB', 'Wikidata.DB'), ('', 'Any'))
     source = dfi.MultipleChoiceFilter(choices=SOURCE_CHOICES,
                                       widget=forms.CheckboxSelectMultiple,
-                                      lookup_expr='icontains', label="Data Format:")
+                                      lookup_expr='icontains', label="Source:")
     issued_date = dfi.DateFromToRangeFilter(lookup_expr='icontains',
                                             widget=dfi.widgets.RangeWidget
                                             (attrs={'placeholder': 'yyyy-mm-dd'}),

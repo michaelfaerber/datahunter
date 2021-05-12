@@ -35,7 +35,7 @@ class Dataset(models.Model):
     issued_date = models.DateField(null=True)
     modified_date = models.DateField(null=True)
     language = models.CharField(max_length=50, default="", null=True)
-    contact = models.CharField(max_length=500, default="", null=True)
     ranking_score = models.DecimalField(decimal_places=5, max_digits=10, default=1, null=True)
+    referenced_papers = models.CharField(max_length=10000000, default="", null=True)
     referenced_papers = models.ManyToManyField(Paper, default="")
     referenced_papers_string = models.CharField(max_length=10000000, default="", null=True)
