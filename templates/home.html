@@ -5,20 +5,14 @@
 <div class="row">
     <div class="col">
         <h1>Dataset-Search-Engine</h1>
-
         <p>This search engine enables users to search for suitable datasets given a research problem description (e.g., consisting of keywords or a paper's abstract).</p>
-        <p>This demo version was developed in a bachelor thesis and the full source code can be accessed on ....  Existing dataset search engines are mainly based on keyword or faceted search and researchers have found this forms of search insufficient. For this reason, this demo version proposes a new approach that models data needs by full text problem description. The used recommendation algorithm is based on text classification followed by a ranking. A pretrained text classifier predicts a set of relevant datasets for an entered problem description and the selected datasets are ranked among their relevancy. The benefit of this approach in comparison to keyword and faceted search is the independence from metadata and the expression of data needs in full text. In a comprehensive evaluation of different text classification models, this approach has achieved very promising results. The best model has reached a precision of 0.78 and F1-score of 0.78 in the offline evaluation, in the user study these results were further outperformed by a precision of 0.94. This Linear SVM model is implemented in this demo version of a search engine.</p> 
+        <p>The source code is available at <a href="https://github.com/michaelfaerber/dataset-search">GitHub</a>.</p> 
         <p>At the moment the search engine is not able to make predictions for all problem descriptions. Possible requests can be found <a href="possible_queries">here</a>.</p>
-
-        <form class="row" id="aboutb" method="GET"></form>
-            <button class="btn btn-outline-dark" type="submit" form="aboutb" formaction="about">Learn more</button>
-        </form>
     </div>
 </div>
 
-<div class="row" style="margin-top: 50px">
+<div class="row">
     <form id="queryform" class="col-12">
-        <h2>Demo</h2>
         <label class="control-label mt-2" for="querytext">Please enter your query:</label>
         <textarea class="form-control mt-2" name="querytext" style="height: 200px"></textarea>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
