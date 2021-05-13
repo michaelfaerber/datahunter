@@ -287,10 +287,11 @@ def recommendation(request):
                 break
             papers_count += 1
             referenced_paper = {}
-            referenced_paper["url"] = paper
             paperid = str(paper).replace("http://ma-graph.org/entity/", "").strip()
             text = str(paperid)
             referenced_paper["id"] = text
+            #referenced_paper["url"] = paper # URL to RDF entity
+            referenced_paper["url"] = "https://academic.microsoft.com/paper/" + text # URL to human-readable MAKG site
             try:
                 title = titles.get(int(paperid))
                 text = text + " (" + str(title) + ")"
