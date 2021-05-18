@@ -190,11 +190,12 @@ def recommendation(request):
             dataset_topic = dataset_topic + alternative
         if not pd.isnull(dataframe['theme'][index]):
             theme = str(dataframe['theme'][index]).strip()
-            theme = theme.translate(str.maketrans("", "", string.digits))
+            #TODO get label of theme and create link
+            #theme = theme.translate(str.maketrans("", "", string.digits))
             #theme = theme.translate(str.maketrans("", "", string.punctuation))
-            if dataset_topic != "":
-                dataset_topic = dataset_topic + ", "
-            dataset_topic = dataset_topic + theme
+            #if dataset_topic != "":
+            #    dataset_topic = dataset_topic + ", "
+            #dataset_topic = dataset_topic + theme
         dataset_url_list = []
         if not pd.isnull(dataframe['landingPage'][index]):
             landingPage = str(dataframe['landingPage'][index]).split(",")
