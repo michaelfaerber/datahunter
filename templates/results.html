@@ -97,9 +97,9 @@
                                         <ul>
                                             {% for paper in dataset.referenced_papers.all %}
                                                 {% if paper.title != None and paper.title != "" %}
-                                                    <li>{{ paper.title }} (<a href="{{ paper.url }}">{{ paper.paperid }}</a>)</li>
+                                                    <li><a href="{{ paper.url }}">{{ paper.title }}</a></li>
                                                 {% else %}
-                                                    <li><a href="{{ paper.url }}">{{ paper.paperid }}</a> (no title)</li>
+                                                    <li><a href="{{ paper.url }}">{{ paper.paperid }}</a></li>
                                                 {% endif %}
                                             {% endfor %}
                                         </ul>
