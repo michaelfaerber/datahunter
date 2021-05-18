@@ -126,8 +126,9 @@ def dataset_prediction(query):
     prediction_list = prediction_clean.split(",")
     dataset_file = pd.read_csv(
         "/vol3/ann-kathrin/DSKG_FINAL_TABELLENFORM.csv")
-    with open("Logging_File.txt", "a") as file:
-        file.write("{}\t{}\n".format(query, prediction_list))
+    with open("log.txt", "a") as file:
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        file.write("{}\t{}\t{}\n".format(timestamp, query, prediction_list))
         file.flush()
     prediction_indices = []
     selected_datasets = []
