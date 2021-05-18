@@ -3,7 +3,6 @@
 {% load searchextras %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{% static 'styles/styleresults.css' %}">
 <div class="container">
     {% if recommendation_empty %}
         <h2>We are sorry, but we did not find any datasets that match your problem description.<h2>
@@ -93,7 +92,7 @@
                             {% endif %}
                             {% if dataset.referenced_papers != None %}
                                 <tr>
-                                    <td>Papers that reference this dataset:</td>
+                                    <td>Top 5 papers referencing this dataset:</td>
                                     <td>
                                         <ul>
                                             {% for paper in dataset.referenced_papers.all %}
