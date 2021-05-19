@@ -1,0 +1,33 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h1>Dataset-Search-Engine</h1>
+        <p>This search engine enables users to search for suitable datasets given a research problem description (e.g., consisting of keywords or a paper's abstract).</p>
+        <p>The source code is available at <a href="https://github.com/michaelfaerber/dataset-search">GitHub</a>.</p> 
+        <p>At the moment the search engine is not able to make predictions for all problem descriptions. Possible requests can be found <a href="possible_queries">here</a>.</p>
+    </div>
+</div>
+
+<div class="row">
+    <form id="queryform" class="col-12">
+        <label class="control-label mt-2" for="querytext">Please enter your query:</label>
+        <button id="load-example" class="btn btn-outline-dark btn-sm me-md-2" type="button" style="margin-left: 10px">Load example</button>
+        <textarea id="querytext" class="form-control mt-2" name="querytext" style="height: 200px"></textarea>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            <button class="btn btn-dark me-md-2" type="submit" form="queryform" formaction="recommendation">Submit</button>
+            <button class="btn btn-outline-dark" type="reset" form="queryform">Reset</button>
+        </div>
+    </form>
+</div>
+
+<script>
+var exampleText = "This paper introduces a new framework for open-domain question answering in which the retriever and the reader iteratively interact with each other. The framework is agnostic to the architecture of the machine reading model, only requiring access to the token-level hidden representations of the reader. The retriever uses fast nearest neighbor search to scale to corpora containing millions of paragraphs. A gated recurrent unit updates the query at each step conditioned on the state of the reader and the reformulated query is used to re-rank the paragraphs by the retriever. We conduct analysis and show that iterative interaction helps in retrieving informative paragraphs from the corpus.";
+$("#load-example").click(function() {
+    $("#querytext").val(exampleText);
+});
+</script>
+
+{% endblock %}
