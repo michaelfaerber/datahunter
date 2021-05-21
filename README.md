@@ -14,9 +14,9 @@ Detailled instructions follow soon.
 ### Run
 
 To run the UI on the Django server, execute within the main directory
-<code>python manage.py runserver 0:&lt;PORT&gt;</code>
+<code>python manage.py runserver 0:{{PORT}}</code>
 
-Typical port numbers are 8000, 8080 or 9000. If you do not specify any port number, the port 8000 will be used automatically. To access the application go to https://localhost:&lt;PORT&gt;. In case you are running the application on a remote server, replace _localhost_ by the remote server's IP address.
+Typical port numbers are 8000, 8080 or 9000. If you do not specify any port number, the port 8000 will be used automatically. To access the application go to https://localhost:{{PORT}}. In case you are running the application on a remote server, replace _localhost_ by the remote server's IP address.
 
 ### Migrations
 
