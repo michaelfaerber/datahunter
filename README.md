@@ -1,4 +1,4 @@
-# Dataset Search UI
+# DataHunter / Dataset Search UI
 
 In this repository, we provide the source code for the UI of our [dataset search engine](https://github.com/michaelfaerber/dataset-search).
 
